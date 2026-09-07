@@ -780,12 +780,6 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
     ['12-netease-intern.svg','网易云实习','音乐人运营'],
     ['13-grad-film.svg','毕设纪录片','导演作品获校级优秀设计']
   ];
-  // 预加载徽章：提前 warm 缓存，打开 Stamps 时即时显示（仍 13 个请求，但更早开始；低优先级不抢占首屏）
-  BADGES.forEach(function(b){
-    var l=document.createElement('link'); l.rel='preload'; l.setAttribute('as','image'); l.setAttribute('fetchpriority','low');
-    l.href='assets/badges/'+encodeURIComponent(b[0]);
-    document.head.appendChild(l);
-  });
   // 确定性伪随机（固定种子），保证每次布局一致
   function seeded(seed){let s=seed;return function(){s=(s*9301+49297)%233280;return s/233280;};}
   const rnd=seeded(20260906);
