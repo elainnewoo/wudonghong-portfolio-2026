@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img"><g transform="rotate(4.0 100 80)"><g>
+  <path d="M 30 20 L 170 20 L 190 40 L 190 120 L 170 140 L 30 140 L 10 120 L 10 40 Z" fill="none" stroke="#4a8a5a" stroke-width="2" stroke-linejoin="round" />
+  <text x="100" y="52" font-size="18" font-weight="600" fill="#4a8a5a" text-anchor="middle">越南Showcase</text>
+  <g transform="translate(100, 88) scale(1.462)"><g class="ic"><g stroke="#4a8a5a" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="-3.5" y="-12" width="7" height="16" rx="3.5" /><path d="M 0 4 L 0 8" /><path d="M -6 8 L 6 8" /><path d="M -7 11 L 7 11" /><path d="M -5 14 L 5 14" /></g></g></g>
+  <text x="100" y="132" font-size="15" font-weight="700" fill="#4a8a5a" text-anchor="middle">跨国落地</text>
+</g></g></svg>

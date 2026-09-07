@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img"><g transform="rotate(-6.0 100 80)"><g>
+  <rect x="12" y="20" width="176" height="120" rx="56" fill="none" stroke="#8a3a2a" stroke-width="2" />
+  <text x="100" y="52" font-size="18" font-weight="600" fill="#8a3a2a" text-anchor="middle">毕设纪录片</text>
+  <g transform="translate(100, 88) scale(1.292)"><g class="ic"><g stroke="#8a3a2a" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round">
+    <rect x="-16" y="-1" width="32" height="15" rx="2.5" />
+    <g transform="rotate(-9 -16 -1)">
+      <rect x="-16" y="-11" width="32" height="9" rx="2" />
+      <path d="M -16 -11 L -9 -2 M -9 -11 L -2 -2 M -2 -11 L 5 -2 M 5 -11 L 12 -2 M 12 -11 L 18 -3" stroke-width="1.2" />
+    </g>
+  </g></g></g>
+  <text x="100" y="130" font-size="14" font-weight="700" fill="#8a3a2a" text-anchor="middle">2018 · 校级优秀</text>
+</g></g></svg>

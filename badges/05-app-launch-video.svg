@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img"><g transform="rotate(6.0 100 80)"><g>
+  <rect x="20" y="20" width="160" height="120" rx="60" fill="none" stroke="#c8336a" stroke-width="2" />
+  <text x="100" y="52" font-size="18" font-weight="600" fill="#c8336a" text-anchor="middle">APP启动视频</text>
+  <path d="M 88.8 79.9 L 88.8 100.1 L 113.2 90 Z" fill="#c8336a" stroke="#c8336a" stroke-width="10.1" stroke-linejoin="round" />
+  <text x="100" y="132" font-size="15" font-weight="700" fill="#c8336a" text-anchor="middle">2亿+</text>
+</g></g></svg>

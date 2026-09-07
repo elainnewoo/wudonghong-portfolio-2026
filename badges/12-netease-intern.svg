@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" role="img"><g transform="rotate(5.0 100 80)"><g>
+  <path d="M 30 20 L 170 20 L 190 40 L 190 120 L 170 140 L 30 140 L 10 120 L 10 40 Z" fill="none" stroke="#a8442a" stroke-width="2" stroke-linejoin="round" />
+  <text x="100" y="52" font-size="18" font-weight="600" fill="#a8442a" text-anchor="middle">网易云实习</text>
+  <g transform="translate(100, 88) scale(1.654)"><g class="ic"><g stroke="#a8442a" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="-5" cy="7" rx="5" ry="3.6" transform="rotate(-18 -5 7)" fill="#a8442a" /><path d="M 0 5 L 0 -11" /><path d="M 0 -11 C 5 -9 6 -5 3.5 -2.5" /></g></g></g>
+  <text x="100" y="132" font-size="15" font-weight="700" fill="#a8442a" text-anchor="middle">2018 · 音乐人运营</text>
+</g></g></svg>
