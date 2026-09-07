@@ -525,10 +525,10 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
     #works .works-topspace{order:1}
     #works .cat-nav{order:2;padding:14px 5vw 18px}
     #works .works-stage{order:3}
-    /* Works 封面：手机端裁切比例改为 3:5（原 170×416 竖长条 → 170×283），顶部预留红点气泡空间避免压图 */
-    #works .graphic-grid{align-items:center; padding:10px 52px 24px; overflow-y:visible}
+    /* Works 封面：手机端裁切比例 3:5（170×283）；红点照常压在封面上；顶部预留黑色气泡(悬停tooltip)空间避免被裁切 */
+    #works .graphic-grid{align-items:center; padding:52px 52px 24px; overflow-y:visible}
     #works .proj-card{height:auto}
-    #works .proj-thumb{aspect-ratio:3/5;flex:none;height:auto;min-height:0;padding-top:18px;background:transparent}
+    #works .proj-thumb{aspect-ratio:3/5;flex:none;height:auto;min-height:0;background:transparent}
 
     /* Lightbox 移动端：去掉左右/关闭按钮，改用左右手势划动 + 点背景关闭 */
     .lightbox .lb-close,.lightbox .lb-prev,.lightbox .lb-next{display:none !important}
