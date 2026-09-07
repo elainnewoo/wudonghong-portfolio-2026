@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WU DONGHONG's Portfolio</title>
+<link rel="icon" href="data:,">
 <meta name="description" content="吴东鸿 · 6.5年内容营销与海外整合营销 · 腾讯音乐4年 × 虎牙出海2年 · 游历35国 · 接受长期派驻">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -503,14 +504,34 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
     .wx-stack{width:min(278px,64vw);height:min(360px,84vw)}
   }
 
-  /* ===== 手机竖屏：整屏吸附固定页面（仅竖屏生效，桌面/横屏不变） ===== */
+  /* ===== 手机竖屏：整屏分页（一次一屏，导航直接切换，无滚动吸附、无闪烁） ===== */
   @media (max-width:820px) and (orientation:portrait){
-    html{scroll-snap-type:y mandatory}
-    body{scroll-snap-type:y mandatory}
-    section{scroll-snap-align:start;height:100vh;min-height:100vh;overflow-y:auto;scroll-snap-stop:always}
-    .cover{height:100vh}
-    /* 吸附时给固定导航留出顶部空间，避免标题被遮 */
-    .sec, .works-title, #world h2, .ab-head{padding-top:64px}
+    html,body{overflow:hidden;height:100%}
+    /* 封面在手机端不存在 */
+    #cover{display:none !important}
+    /* 每个 section 成为一整屏可滚动页面，仅 .is-active 显示 */
+    #works,#world,#contact{
+      position:fixed;inset:0;width:100%;max-width:none;margin:0;
+      height:100%;min-height:100%;overflow-y:auto;overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;display:none;
+    }
+    #works.is-active{display:flex !important}
+    #world.is-active,#contact.is-active{display:block !important}
+    /* 顶部导航：当前页高亮 */
+    nav.main-nav a.on{color:var(--tomato);font-weight:700}
+
+    /* Works：把三条波浪线提到标题/占位下方、舞台上方，避免沉底显得空白 */
+    #works .works-title{order:1}
+    #works .works-topspace{order:1}
+    #works .cat-nav{order:2;padding:14px 5vw 18px}
+    #works .works-stage{order:3}
+    /* Works 卡片固定 416px 高，避免被舞台底部裁切 */
+    #works .graphic-grid{align-items:center; padding:10px 52px 24px; overflow-y:visible}
+    #works .proj-card{height:416px}
+
+    /* Lightbox 移动端：去掉左右/关闭按钮，改用左右手势划动 + 点背景关闭 */
+    .lightbox .lb-close,.lightbox .lb-prev,.lightbox .lb-next{display:none !important}
+    .lb-meta{left:16px;right:16px}
   }
 
 </style>
@@ -655,12 +676,12 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
   <!-- 中央 · 微信折叠相册（纯图片堆叠）：桌面绝对居中；竖屏自然排在 About Me 标题上方 -->
   <div class="ab-gallery" id="abGallery">
     <div class="wx-stack" id="wxStack">
-      <img src="assets/about/img5441.jpg" alt="关于我">
-      <img src="assets/about/img4887.jpg" alt="关于我 2">
-      <img src="assets/about/img6419.jpg" alt="关于我 3">
-      <img src="assets/about/img7166.jpg" alt="关于我 4">
-      <img src="assets/about/img8495.jpg" alt="关于我 5">
-      <img src="assets/about/fxn.jpg" alt="关于我 6">
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/1.jpg"><img src="assets/about/img5441.jpg" alt="关于我" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/2.jpg"><img src="assets/about/img4887.jpg" alt="关于我 2" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/3.jpg"><img src="assets/about/img6419.jpg" alt="关于我 3" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/4.jpg"><img src="assets/about/img7166.jpg" alt="关于我 4" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/5.jpg"><img src="assets/about/img8495.jpg" alt="关于我 5" loading="lazy" decoding="async"></picture>
+      <picture><source media="(max-width:820px)" srcset="assets/about/th/6.jpg"><img src="assets/about/fxn.jpg" alt="关于我 6" loading="lazy" decoding="async"></picture>
     </div>
   </div>
   <h2 class="sec ab-head" style="color:#111;font-size:clamp(28px,4vw,40px)">About Me · 关于我</h2>
@@ -906,7 +927,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     // 高亮当前缩略图
     Array.from(lbStrip.children).forEach((el,i)=>el.classList.toggle('active',i===curIdx));
   }
-  window.openLightbox=function(pi,ii){curProj=pi;curIdx=ii;buildStrip(PROJECTS[pi]);showImg();lb.classList.add('open');document.body.style.overflow='hidden';const h=document.getElementById('lbHint');if(h)h.classList.remove('hide');if(document.activeElement)document.activeElement.blur();};
+  window.openLightbox=function(pi,ii){curProj=pi;curIdx=ii;buildStrip(PROJECTS[pi]);showImg();lb.classList.add('open');document.body.style.overflow='hidden';const h=document.getElementById('lbHint');if(h){h.classList.remove('hide'); if(window.matchMedia('(max-width:820px) and (orientation:portrait)').matches) h.textContent='左右滑动切换 · 双指缩放 · 点背景关闭';} if(document.activeElement)document.activeElement.blur();};
   function closeLb(){lb.classList.remove('open');lbImg.src='';resetZoom();document.body.style.overflow='';}
   function step(d){const n=PROJECTS[curProj].imgs.length;curIdx=(curIdx+d+n)%n;showImg();}
   function goTo(i){const n=PROJECTS[curProj].imgs.length;curIdx=(i%n+n)%n;showImg();}
@@ -915,7 +936,21 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   document.getElementById('lbPrev').addEventListener('click',e=>{e.stopPropagation();step(-1);});
   document.getElementById('lbNext').addEventListener('click',e=>{e.stopPropagation();step(1);});
   // 点击暗色背景关闭；但若是在放大后拖拽平移过，则不误关
-  lb.addEventListener('click',e=>{if(e.target===lb){if(movedPress){movedPress=false;return;}closeLb();}});
+  let lbSwiped=false;
+  lb.addEventListener('click',e=>{if(lbSwiped){lbSwiped=false;return;}if(e.target===lb){if(movedPress){movedPress=false;return;}closeLb();}});
+
+  /* 移动端：左右滑动切换图片（按钮已隐藏，靠手势 + 点背景关闭） */
+  let lbTSX=0,lbTSY=0,lbTouching=false;
+  lb.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){lbTouching=true;lbTSX=e.touches[0].clientX;lbTSY=e.touches[0].clientY;}
+  },{passive:true});
+  lb.addEventListener('touchend',e=>{
+    if(!lbTouching)return; lbTouching=false;
+    if(scale>1 || movedPress)return; // 放大/平移中不触发划动切图
+    const t=e.changedTouches[0];
+    const dx=t.clientX-lbTSX, dy=t.clientY-lbTSY;
+    if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.4){ step(dx<0?1:-1); lbSwiped=true; }
+  },{passive:true});
 
   // 入场动画结束后移除 rising：否则 fill:both 会持续覆盖后续缩放用的 transform
   lbImg.addEventListener('animationend',e=>{if(e.animationName==='lbRise')lbImg.classList.remove('rising');});
@@ -1163,64 +1198,92 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   window.__collapseWorks=function(){setActive(null);};
 })();
 
-/* ============ 6. 单页 section 锁定 + nav 切换 + 键盘 ↑↓ ============ */
+/* ============ 6. 导航：桌面滚动定位 / 手机竖屏整屏分页 ============ */
 (function () {
-  const SECTION_IDS = ['cover','works','world','contact'];
-  const sections = SECTION_IDS.map(id=>document.getElementById(id)).filter(Boolean);
+  const mm = window.matchMedia('(max-width:820px) and (orientation:portrait)');
+  const DESKTOP_IDS = ['cover','works','world','contact'];
+  const MOBILE_IDS  = ['contact','works','world'];   // 手机：默认 About，无封面
+  const isMobile = () => mm.matches;
 
-  function goTo(idx){
-    if(idx<0||idx>=sections.length)return;
-    sections[idx].scrollIntoView({behavior:'auto',block:'start'});
-    history.replaceState(null,'','#'+SECTION_IDS[idx]);
+  /* ---------- 桌面：滚动定位 ---------- */
+  const dSec = DESKTOP_IDS.map(id=>document.getElementById(id)).filter(Boolean);
+  let dIdx = 0;
+  function dGoTo(i){
+    if(i<0||i>=dSec.length) return;
+    dSec[i].scrollIntoView({behavior:'auto',block:'start'});
+    history.replaceState(null,'','#'+DESKTOP_IDS[i]);
+  }
+  function dDetect(){
+    let b=0,bv=-1;
+    dSec.forEach((s,i)=>{const r=s.getBoundingClientRect();const v=Math.max(0,Math.min(innerHeight,r.bottom)-Math.max(0,r.top));if(v>bv){bv=v;b=i;}});
+    dIdx=b;
   }
 
-  document.querySelectorAll('a[href^="#"]').forEach(a=>{
-    const id=a.getAttribute('href').slice(1);
-    const idx=SECTION_IDS.indexOf(id);
-    if(idx>=0){
-      a.addEventListener('click',e=>{e.preventDefault();goTo(idx);});
-    }
+  /* ---------- 手机：整屏分页 ---------- */
+  const mSec = MOBILE_IDS.map(id=>document.getElementById(id)).filter(Boolean);
+  const navLinks = Array.from(document.querySelectorAll('nav.main-nav a[href^="#"]'));
+  function mShow(i,push){
+    if(i<0||i>=mSec.length) return;
+    mSec.forEach((s,k)=>s.classList.toggle('is-active',k===i));
+    mSec[i].scrollTop = 0;
+    mSec[i].querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+    navLinks.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+MOBILE_IDS[i]));
+    if(push!==false) history.replaceState(null,'','#'+MOBILE_IDS[i]);
+  }
+  const mIdx = id => MOBILE_IDS.indexOf(id);
+
+  /* ---------- 导航点击分流 ---------- */
+  navLinks.forEach(a=>{
+    const id = a.getAttribute('href').slice(1);
+    a.addEventListener('click',e=>{
+      e.preventDefault();
+      if(isMobile()){
+        const i=mIdx(id); if(i>=0) mShow(i);
+      } else {
+        const i=DESKTOP_IDS.indexOf(id); if(i>=0) dGoTo(i);
+      }
+    });
   });
 
-  /* 左上角名字：返回【当前页面】初始状态（滚到顶部 + 收起 Works 面板 / 画廊回封面） */
-  var brand=document.getElementById('brandHome');
+  /* 左上角名字：手机→About；桌面→当前页顶部 */
+  const brand = document.getElementById('brandHome');
   if(brand){
-    function homeCurrent(){
-      detectCurrent();
-      var s=sections[currentIdx];
-      if(!s)return;
-      s.scrollIntoView({behavior:'auto',block:'start'});
-      s.scrollTop=0;
+    function brandHome(){
+      if(isMobile()){ mShow(mIdx('contact')); return; }
+      dDetect();
+      const s=dSec[dIdx]; if(!s) return;
+      s.scrollIntoView({behavior:'auto',block:'start'}); s.scrollTop=0;
       if(s.id==='works' && window.__collapseWorks) window.__collapseWorks();
       if(s.id==='contact' && window.__resetGallery) window.__resetGallery();
-      history.replaceState(null,'','#'+SECTION_IDS[currentIdx]);
+      history.replaceState(null,'','#'+DESKTOP_IDS[dIdx]);
     }
-    brand.addEventListener('click',function(e){e.preventDefault();homeCurrent();});
-    brand.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();homeCurrent();}});
+    brand.addEventListener('click',e=>{e.preventDefault();brandHome();});
+    brand.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();brand.click();}});
   }
 
-  let currentIdx=0;
-  function detectCurrent(){
-    let best=0,bv=-1;
-    sections.forEach((s,i)=>{
-      const r=s.getBoundingClientRect();
-      const v=Math.max(0,Math.min(window.innerHeight,r.bottom)-Math.max(0,r.top));
-      if(v>bv){bv=v;best=i;}
-    });
-    currentIdx=best;
-  }
-
+  /* 键盘 ↑↓ 仅桌面 */
   window.addEventListener('keydown',e=>{
-    const lbOpen=document.getElementById('lightbox').classList.contains('open');
-    if(lbOpen)return;   // lightbox 打开时不切 section
-    if(e.key==='ArrowDown'){e.preventDefault();detectCurrent();goTo(Math.min(sections.length-1,currentIdx+1));}
-    else if(e.key==='ArrowUp'){e.preventDefault();detectCurrent();goTo(Math.max(0,currentIdx-1));}
+    if(isMobile()) return;
+    const lb=document.getElementById('lightbox');
+    if(lb && lb.classList.contains('open')) return;
+    if(e.key==='ArrowDown'){e.preventDefault();dDetect();dGoTo(Math.min(dSec.length-1,dIdx+1));}
+    else if(e.key==='ArrowUp'){e.preventDefault();dDetect();dGoTo(Math.max(0,dIdx-1));}
   });
 
-  const hash=location.hash.slice(1);
-  const initIdx=SECTION_IDS.indexOf(hash);
-  const startIdx=initIdx>=0?initIdx:SECTION_IDS.indexOf('contact');   // 默认主页 = About
-  if(startIdx>=0)requestAnimationFrame(()=>goTo(startIdx));
+  /* ---------- 初始 / 旋转重初始化 ---------- */
+  function init(){
+    const hash = location.hash.slice(1);
+    if(isMobile()){
+      const i = mIdx(hash); mShow(i>=0?i:mIdx('contact'), false);
+    } else {
+      const i = DESKTOP_IDS.indexOf(hash); dGoTo(i>=0?i:DESKTOP_IDS.indexOf('contact'));
+    }
+  }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(init));
+  else requestAnimationFrame(init);
+  const onModeChange = () => requestAnimationFrame(init);
+  if(mm.addEventListener) mm.addEventListener('change', onModeChange);
+  else if(mm.addListener) mm.addListener(onModeChange);   // 旧 Safari
 })();
 </script>
 
