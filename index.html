@@ -511,6 +511,15 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
     .wx-stack{width:min(278px,64vw);height:min(360px,84vw)}
   }
 
+  /* ===== 桌面/通用：4 个页面区块相互独立，仅 .is-active 显示，互不上下连接（彻底消除缩放穿帮） ===== */
+  #cover,#works,#world,#contact{
+    position:fixed; inset:0; width:100%; max-width:1080px; margin:0 auto;
+    height:100%; min-height:100%; overflow-y:auto; overflow-x:hidden;
+    -webkit-overflow-scrolling:touch; display:none;
+  }
+  #cover.is-active,#works.is-active{display:flex}
+  #world.is-active,#contact.is-active{display:block}
+
   /* ===== 手机竖屏：整屏分页（一次一屏，导航直接切换，无滚动吸附、无闪烁） ===== */
   @media (max-width:820px) and (orientation:portrait){
     html,body{overflow:hidden;height:100%}
@@ -1218,18 +1227,18 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
   const MOBILE_IDS  = ['contact','works','world'];   // 手机：默认 About，无封面
   const isMobile = () => mm.matches;
 
-  /* ---------- 桌面：滚动定位 ---------- */
+  /* ---------- 桌面：整屏分页（与手机同模型，区块互不连接，仅 .is-active 显示） ---------- */
   const dSec = DESKTOP_IDS.map(id=>document.getElementById(id)).filter(Boolean);
   let dIdx = 0;
-  function dGoTo(i){
+  function dShow(i,push){
     if(i<0||i>=dSec.length) return;
-    dSec[i].scrollIntoView({behavior:'auto',block:'start'});
-    history.replaceState(null,'','#'+DESKTOP_IDS[i]);
-  }
-  function dDetect(){
-    let b=0,bv=-1;
-    dSec.forEach((s,i)=>{const r=s.getBoundingClientRect();const v=Math.max(0,Math.min(innerHeight,r.bottom)-Math.max(0,r.top));if(v>bv){bv=v;b=i;}});
-    dIdx=b;
+    dIdx=i;
+    dSec.forEach((s,k)=>s.classList.toggle('is-active',k===i));
+    const s=dSec[i];
+    s.scrollTop=0;
+    s.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+    navLinks.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+DESKTOP_IDS[i]));
+    if(push!==false) history.replaceState(null,'','#'+DESKTOP_IDS[i]);
   }
 
   /* ---------- 手机：整屏分页 ---------- */
@@ -1253,7 +1262,7 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
       if(isMobile()){
         const i=mIdx(id); if(i>=0) mShow(i);
       } else {
-        const i=DESKTOP_IDS.indexOf(id); if(i>=0) dGoTo(i);
+        const i=DESKTOP_IDS.indexOf(id); if(i>=0) dShow(i);
       }
     });
   });
@@ -1263,9 +1272,8 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
   if(brand){
     function brandHome(){
       if(isMobile()){ mShow(mIdx('contact')); return; }
-      dDetect();
       const s=dSec[dIdx]; if(!s) return;
-      s.scrollIntoView({behavior:'auto',block:'start'}); s.scrollTop=0;
+      s.scrollTop=0;
       if(s.id==='works' && window.__collapseWorks) window.__collapseWorks();
       if(s.id==='contact' && window.__resetGallery) window.__resetGallery();
       history.replaceState(null,'','#'+DESKTOP_IDS[dIdx]);
@@ -1279,8 +1287,8 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
     if(isMobile()) return;
     const lb=document.getElementById('lightbox');
     if(lb && lb.classList.contains('open')) return;
-    if(e.key==='ArrowDown'){e.preventDefault();dDetect();dGoTo(Math.min(dSec.length-1,dIdx+1));}
-    else if(e.key==='ArrowUp'){e.preventDefault();dDetect();dGoTo(Math.max(0,dIdx-1));}
+    if(e.key==='ArrowDown'){e.preventDefault();dShow(Math.min(dSec.length-1,dIdx+1));}
+    else if(e.key==='ArrowUp'){e.preventDefault();dShow(Math.max(0,dIdx-1));}
   });
 
   /* ---------- 初始 / 旋转重初始化 ---------- */
@@ -1290,7 +1298,7 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
       const i = mIdx(hash);
       mShow(i>=0?i:mIdx('contact'), false);
     } else {
-      const i = DESKTOP_IDS.indexOf(hash); dGoTo(i>=0?i:DESKTOP_IDS.indexOf('contact'));
+      const i = DESKTOP_IDS.indexOf(hash); dShow(i>=0?i:DESKTOP_IDS.indexOf('contact'), false);
     }
   }
   if(document.readyState==='loading') window.addEventListener('DOMContentLoaded',()=>requestAnimationFrame(init));
