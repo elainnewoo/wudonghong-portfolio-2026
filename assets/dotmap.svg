@@ -25,5 +25,33 @@
     });
     m.addEventListener('mouseleave', hidePopup);
   });
+
+  /* 移动端：点按点阵显示国名（桌面 hover 不受影响，触摸事件不会在桌面触发） */
+  var markerData = Array.prototype.map.call(markers, function(m){
+    return { en:m.getAttribute('data-en'), x:parseFloat(m.getAttribute('data-x')), y:parseFloat(m.getAttribute('data-y')) };
+  });
+  function clientToSvg(e){
+    var pt = svg.createSVGPoint();
+    pt.x = e.touches ? e.touches[0].clientX : e.clientX;
+    pt.y = e.touches ? e.touches[0].clientY : e.clientY;
+    var ctm = svg.getScreenCTM();
+    if(!ctm) return null;
+    return pt.matrixTransform(ctm.inverse());
+  }
+  svg.addEventListener('touchstart', function(e){
+    var p = clientToSvg(e); if(!p) return;
+    var best=null, bd=26;   // svg 单位命中阈值（约 2.6% 宽，便于手指点按）
+    for(var i=0;i<markerData.length;i++){
+      var mk=markerData[i];
+      var d=Math.hypot(mk.x-p.x, mk.y-p.y);
+      if(d<bd){ bd=d; best=mk; }
+    }
+    if(best){
+      if(e.cancelable) e.preventDefault();   // 命中才阻止默认，避免误触发鼠标事件导致弹层被立刻收起；空白区域放行页面滚动
+      showPopup(best.en, best.x, best.y);
+    } else {
+      hidePopup();
+    }
+  }, {passive:false});
 })();
 ]]></script></svg>
