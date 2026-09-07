@@ -517,8 +517,8 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
     height:100%; min-height:100%; overflow-y:auto; overflow-x:hidden;
     -webkit-overflow-scrolling:touch; display:none;
   }
-  /* 文字页(cover/contact)居中收窄；作品集/世界地图满宽，避免左右大留白 */
-  #cover,#contact{max-width:1080px; margin:0 auto}
+  /* 仅 cover(空白占位)居中收窄；works/world/contact 均满宽(=原始)，标题对齐、四角归位 */
+  #cover{max-width:1080px; margin:0 auto}
   #cover.is-active,#works.is-active{display:flex}
   #world.is-active,#contact.is-active{display:block}
 
