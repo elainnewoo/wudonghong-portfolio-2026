@@ -117,7 +117,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
 .cat-panel[data-cat="Projects"].active{overflow:visible} /* 作品悬停气泡溢出时仍可见 */
 /* 关键：不能用 height:100%（父容器 height:0 时会算出 0，导致 scrollHeight=0 内容不可见）
    改用 JS 写入的 --stage-h（stage 实际可用高度）作为 min-height */
-.panel-inner{position:relative;width:100%;height:var(--stage-h,calc(100vh - 240px));padding:10px 4vw}
+.panel-inner{position:relative;width:100%;height:var(--stage-h,calc(100vh - 240px));padding:10px 4vw;display:flex;align-items:center;justify-content:center;flex-direction:column}
 
 /* ---- Careers · 屏风折手风琴 ---- */
 .career-header{position:absolute;left:36px;top:50%;transform:translateY(-50%);z-index:6;padding:0;pointer-events:none}
@@ -371,7 +371,9 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
 
 /* ============ map ============ */
 #dotmap{width:100%;height:auto;display:block}
-#world{max-width:none;padding:90px 4vw;min-height:100vh}
+#world{max-width:none;padding:90px 4vw;min-height:100vh;display:flex;flex-direction:column}
+#world .reveal{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;margin-top:6px}
+#world #dotmap{aspect-ratio:2/1;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto}
 .legend{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
 
 /* ============ edu / contact ============ */
@@ -676,7 +678,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
   <h2 class="sec" style="color:#111;font-size:clamp(28px,4vw,40px)" data-page-node-id="9ImOVSTLiNSdJFwuGTmaaX">Footprint · 35 国足迹</h2>
   <div class="reveal" style="text-align:center" data-page-node-id="MKBzmDEfOcs89kNN87JF9U">
     <!-- 注：35 国 SVG map，沿用 index.html 原 assets/dotmap.svg -->
-    <object id="dotmap" data="assets/dotmap.svg" type="image/svg+xml" style="width:100%;display:block" data-page-node-id="y41FY94LjmDKgDbHbvWdMa"></object>
+    <object id="dotmap" data="assets/dotmap.svg" type="image/svg+xml" style="display:block" data-page-node-id="y41FY94LjmDKgDbHbvWdMa"></object>
   </div>
 </section>
 
