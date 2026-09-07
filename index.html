@@ -878,7 +878,7 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
     card.setAttribute('aria-label',p.t+' 共 '+p.imgs.length+' 张');
     const coverFull=p.imgs[0];
     const coverMob=coverFull.replace(/(\/works\/p\d+\/)[^/]+$/,'$1th/1.jpg');  // 移动端用 480px 小图
-    const coverDesk=coverFull.replace(/(\//works\//p\d+\//)[^/]+$/,'$1th/960.jpg');  // 桌面用 960px 中清图
+    const coverDesk=coverFull.replace(/(\/works\/p\d+\/)[^/]+$/,'$1th/960.jpg');  // 桌面用 960px 中清图
     card.innerHTML=
       '<div class="proj-thumb'+(p.coverTop?' top':'')+'"><picture><source media="(max-width:820px)" srcset="'+coverMob+'"><img src="'+coverDesk+'" alt="'+p.t+'" loading="lazy" decoding="async"></picture>'+
       (p.imgs.length>1?'<span class="count">'+p.imgs.length+' 图</span>':'')+'</div>'+
