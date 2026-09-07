@@ -534,6 +534,33 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
     .lb-meta{left:16px;right:16px}
   }
 
+/* ============ 手机端 Works 指引浮层（建议电脑端浏览） ============ */
+.works-guide{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:rgba(28,24,20,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s ease;padding:24px}
+.works-guide.open{opacity:1;visibility:visible}
+.works-guide .wg-card{position:relative;width:100%;max-width:360px;background:linear-gradient(160deg,#fffdf9,#f4ece1);
+  border:1px solid #e4d8c6;border-radius:20px;padding:34px 28px 26px;box-shadow:0 26px 60px rgba(0,0,0,.30);
+  transform:translateY(14px) scale(.98);transition:transform .32s cubic-bezier(.2,.8,.25,1)}
+.works-guide.open .wg-card{transform:none}
+.works-guide .wg-stamp{position:absolute;top:-20px;right:16px;width:70px;height:70px;border-radius:50%;
+  border:2px dashed var(--tomato,#ff6347);color:var(--tomato,#ff6347);display:flex;align-items:center;justify-content:center;
+  font-size:9px;letter-spacing:.10em;line-height:1.25;text-align:center;transform:rotate(-12deg);
+  background:rgba(255,253,249,.92);font-weight:700;text-transform:uppercase}
+.works-guide .wg-close{position:absolute;top:10px;left:12px;width:30px;height:30px;border:none;background:transparent;
+  color:#b3a894;font-size:22px;line-height:1;cursor:pointer}
+.works-guide .wg-eyebrow{font-size:11px;letter-spacing:.22em;color:var(--tomato,#ff6347);font-weight:700;margin-bottom:10px;text-transform:uppercase}
+.works-guide .wg-title{font-size:21px;line-height:1.35;color:#1c1a17;margin:0 0 14px;font-weight:700}
+.works-guide .wg-body{font-size:14px;line-height:1.7;color:#5a534a;margin:0 0 18px}
+.works-guide .wg-url{display:block;font-size:12px;color:#8a7f70;background:rgba(0,0,0,.045);border:1px solid #ece2d2;
+  border-radius:10px;padding:9px 12px;margin:0 0 16px;word-break:break-all;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.works-guide .wg-btn{display:block;width:100%;border:none;cursor:pointer;background:var(--tomato,#ff6347);color:#fff;
+  font-size:15px;font-weight:700;padding:13px 16px;border-radius:12px;transition:transform .12s ease}
+.works-guide .wg-btn:active{transform:scale(.97)}
+.works-guide .wg-fallback{display:block;text-align:center;margin-top:14px;font-size:12.5px;color:#9a8f80;
+  text-decoration:none;cursor:pointer}
+.works-guide .wg-fallback:active{color:var(--tomato,#ff6347)}
+
 </style>
 </head>
 <body data-page-node-id="UFrJSFdqSYPBQ5IWCdt96E">
@@ -1239,6 +1266,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     a.addEventListener('click',e=>{
       e.preventDefault();
       if(isMobile()){
+        if(id==='works'){ if(window.__showWorksGuide) window.__showWorksGuide(); else { const i=mIdx(id); if(i>=0) mShow(i); } return; }
         const i=mIdx(id); if(i>=0) mShow(i);
       } else {
         const i=DESKTOP_IDS.indexOf(id); if(i>=0) dGoTo(i);
@@ -1275,7 +1303,9 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   function init(){
     const hash = location.hash.slice(1);
     if(isMobile()){
-      const i = mIdx(hash); mShow(i>=0?i:mIdx('contact'), false);
+      const i = mIdx(hash);
+      if(hash==='works' && window.__showWorksGuide && !sessionStorage.getItem('wgBypass')){ window.__showWorksGuide(); }
+      else mShow(i>=0?i:mIdx('contact'), false);
     } else {
       const i = DESKTOP_IDS.indexOf(hash); dGoTo(i>=0?i:DESKTOP_IDS.indexOf('contact'));
     }
@@ -1285,6 +1315,7 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   const onModeChange = () => requestAnimationFrame(init);
   if(mm.addEventListener) mm.addEventListener('change', onModeChange);
   else if(mm.addListener) mm.addListener(onModeChange);   // 旧 Safari
+  window.__mShow=mShow; window.__mIdx=mIdx;   // 暴露给手机端 Works 指引浮层
 })();
 </script>
 
@@ -1428,6 +1459,47 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
     else if(e.key==='ArrowLeft'){e.preventDefault();show(idx-1);}
     else if(e.key==='ArrowRight'){e.preventDefault();show(idx+1);}
   });
+})();
+</script>
+
+<!-- ============ 手机端 Works 指引浮层 ============ -->
+<div class="works-guide" id="worksGuide" role="dialog" aria-modal="true" aria-label="作品集建议在电脑端浏览" aria-hidden="true">
+  <div class="wg-card">
+    <button class="wg-close" id="wgClose" aria-label="关闭">&times;</button>
+    <div class="wg-stamp">Best<br>on<br>Desktop</div>
+    <div class="wg-eyebrow">Works · 作品集</div>
+    <h2 class="wg-title">建议在电脑端浏览</h2>
+    <p class="wg-body">本栏目收录大量高清作品大图与沉浸式翻页交互，手机端加载较慢。用电脑浏览器打开，方能完整体验每一帧细节。</p>
+    <span class="wg-url" id="wgUrl"></span>
+    <button class="wg-btn" id="wgCopy">复制链接，去电脑打开</button>
+    <a class="wg-fallback" id="wgFallback" role="button">仍要在手机端查看 &rarr;</a>
+  </div>
+</div>
+<script>
+/* ============ 手机端 Works 指引：点击 Works → 引导电脑端 ============ */
+(function(){
+  var SITE_URL='https://elainnewoo.github.io/wudonghong-portfolio-2026/';
+  var KEY='wgBypass';
+  var g=document.getElementById('worksGuide');
+  if(!g) return;
+  var urlEl=document.getElementById('wgUrl');
+  if(urlEl) urlEl.textContent=SITE_URL;
+  function show(){ g.classList.add('open'); g.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+  function hide(){ g.classList.remove('open'); g.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  window.__showWorksGuide=function(){
+    if(sessionStorage.getItem(KEY)==='1'){ if(window.__mShow) window.__mShow(window.__mIdx('works'),false); return; }
+    show();
+  };
+  var copy=document.getElementById('wgCopy');
+  if(copy) copy.addEventListener('click',function(){
+    var ok=function(){copy.textContent='已复制 ✓ 去电脑打开';setTimeout(function(){copy.textContent='复制链接，去电脑打开';},2000);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(SITE_URL).then(ok).catch(ok);}else{ok();}
+  });
+  var close=document.getElementById('wgClose');
+  if(close) close.addEventListener('click',hide);
+  var fb=document.getElementById('wgFallback');
+  if(fb) fb.addEventListener('click',function(){ sessionStorage.setItem(KEY,'1'); hide(); if(window.__mShow) window.__mShow(window.__mIdx('works'),false); });
+  g.addEventListener('click',function(e){ if(e.target===g) hide(); });
 })();
 </script>
 
