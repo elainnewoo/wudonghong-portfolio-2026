@@ -62,7 +62,7 @@ nav.main-nav a{color:var(--mut);text-decoration:none;font-size:13px;transition:c
 nav.main-nav a:hover{color:var(--tomato)}
 
 /* ============ 单页 section 锁定 ============ */
-section{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:90px 5vw;height:calc(100vh - 60px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+section{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:90px 5vw;height:100vh;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
 .kicker{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:3px;color:var(--tomato);margin-bottom:14px;font-weight:500}
 h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-bottom:8px;color:var(--ink)}
 .sub{color:var(--mut);font-size:14px;margin-bottom:36px}
@@ -94,7 +94,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
 /* ================================================================
    Works 页面
    ================================================================ */
-#works{max-width:none;padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:100vh}
+#works{max-width:none;padding:0;overflow:hidden;display:flex;flex-direction:column;height:auto;min-height:100vh}
 .works-title{
   padding:90px 4vw 8px;flex-shrink:0;
   line-height:1.35;white-space:nowrap;position:relative;z-index:3;overflow:visible;
@@ -117,7 +117,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
 .cat-panel[data-cat="Projects"].active{overflow:visible} /* 作品悬停气泡溢出时仍可见 */
 /* 关键：不能用 height:100%（父容器 height:0 时会算出 0，导致 scrollHeight=0 内容不可见）
    改用 JS 写入的 --stage-h（stage 实际可用高度）作为 min-height */
-.panel-inner{position:relative;width:100%;height:var(--stage-h,calc(100vh - 240px));padding:10px 4vw;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.panel-inner{position:relative;width:100%;height:var(--stage-h,calc(100vh - 240px));padding:10px 4vw}
 
 /* ---- Careers · 屏风折手风琴 ---- */
 .career-header{position:absolute;left:36px;top:50%;transform:translateY(-50%);z-index:6;padding:0;pointer-events:none}
@@ -371,9 +371,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin-
 
 /* ============ map ============ */
 #dotmap{width:100%;height:auto;display:block}
-#world{max-width:none;padding:90px 4vw;min-height:100vh;display:flex;flex-direction:column}
-#world .reveal{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;margin-top:6px}
-#world #dotmap{aspect-ratio:2/1;width:auto;height:auto;max-width:100%;max-height:100%;margin:0 auto}
+#world{max-width:none;padding:90px 4vw;min-height:100vh}
 .legend{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
 
 /* ============ edu / contact ============ */
