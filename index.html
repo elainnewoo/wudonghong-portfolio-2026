@@ -467,7 +467,8 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin:
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   /* 竖屏 / 窄屏自适应 */
   @media (max-width:820px){
-    #contact{padding:64px 6vw}
+    #contact{padding:64px 6vw;display:flex;flex-direction:column}
+    #contact>.ab-head{order:-1}  /* About 标题置顶，避免被静态照片墙顶下去，与 Works/Footprint 对齐 */
     .ab-grid{position:static;display:flex;flex-direction:column;gap:28px;padding:18px 6vw 96px;top:auto}
     .ab-block{position:static;max-width:none;left:auto;right:auto;top:auto;bottom:auto}
     .ab-h{font-size:12px}
