@@ -1383,13 +1383,15 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
   // 暴露给导航：点击名字返回 About 初始态（画廊回到封面 IMG_5441）
   window.__resetGallery=function(){cur=0;deal();};
 
-  /* 手势：拖动最前一张翻页
-     手机端：先判方向锁（位移 6px 定性；横向占优才接管并 preventDefault，纵向占优立刻放手交还页面滚动），
-             解决「斜划不翻页 + 页面跟着上下位移」；翻页阈值 36px，快速轻扫 18px/260ms 即可翻页（更灵敏）。
+  /* 手势：拖动最前一张翻页（方案 A · 强化方向锁）
+     手机端：方向锁做「横向偏置」—— |dx| > |dy|×0.7 即判横向，横向占优才 preventDefault 接管；
+             已判纵向但后续明显横向(|dx|>24 且 >1.5×|dy|，且事件仍可取消) → 二次改判夺回控制，
+             避免一次斜划就被永久判死；纵向占优立刻放手交还页面滚动。
+             翻页阈值 28px，或 220ms 内快速轻扫 20px 即翻页。
      电脑端：沿用鼠标拖拽，阈值一致；另保留触控板横向滚动（见下方 wheel）。 */
-  var down=false,sx=0,sy=0,dx=0,moved=false,front=null,lockDir=null,tStart=0;
+  var down=false,sx=0,sy=0,dx=0,moved=false,front=null,lockDir=null,tStart=0,lastX=0,lastY=0;
   function gStart(x,y){
-    down=true;moved=false;dx=0;lockDir=null;sx=x;sy=y;tStart=Date.now();
+    down=true;moved=false;dx=0;lockDir=null;sx=x;sy=y;lastX=x;lastY=y;tStart=Date.now();
     front=layers[cur]; if(front)front.style.transition='none';
   }
   function gRelease(){                       /* 纵向为主：放弃拖拽，把滚动交还页面 */
@@ -1400,39 +1402,49 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
     if(front){front.style.transition='';front.style.transform='';front=null;}
     down=false;moved=false;dx=0;lockDir=null;deal();
   }
-  function gMove(x,y){
+  /* 方向锁：横向偏置 0.7；已判纵向但后续明显横向且事件仍可取消 → 二次改判夺回控制 */
+  function gLock(canPrevent){
+    var ax=Math.abs(lastX-sx), ay=Math.abs(lastY-sy);
+    if(lockDir===null&&(ax>6||ay>6)) lockDir = ax>ay*0.7 ? 'h' : 'v';
+    else if(lockDir==='v'&&canPrevent&&ax>24&&ax>ay*1.5){
+      lockDir='h'; down=true; moved=true; dx=0; sx=lastX; sy=lastY; tStart=Date.now();
+      front=layers[cur]; if(front)front.style.transition='none';
+    }
+    return lockDir;
+  }
+  function gMove(x,y,canPrevent){
+    lastX=x;lastY=y;
+    if(gLock(canPrevent)!=='h'){ if(down&&lockDir==='v') gRelease(); return; }
     if(!down||!front)return;
-    var ddx=x-sx, ddy=y-sy;
-    if(lockDir===null&&(Math.abs(ddx)>6||Math.abs(ddy)>6)) lockDir=Math.abs(ddx)>Math.abs(ddy)?'h':'v';
-    if(lockDir!=='h'){ gRelease(); return; }
-    dx=ddx; if(Math.abs(dx)>4)moved=true;
+    dx=x-sx; if(Math.abs(dx)>4)moved=true;
     front.style.transform='translateX('+dx+'px) rotate('+(dx*0.03)+'deg)';
   }
   function gEnd(){
-    if(!down)return; down=false;
-    var d=dx, el=front, quick=(Date.now()-tStart)<260;
+    if(!down){ lockDir=null; return; }
+    down=false;
+    var d=dx, el=front, quick=(Date.now()-tStart)<220;
     if(el){
       el.style.transition='';                 /* 恢复过渡 */
       if(!moved){ openViewer(cur); }          /* 未移动 = 轻点 → 全屏查看 */
-      else if(d<-36||(quick&&d<-18)){ cur=(cur+1)%n; }
-      else if(d>36||(quick&&d>18)){ cur=(cur-1+n)%n; }
+      else if(d<-28||(quick&&d<-20)){ cur=(cur+1)%n; }
+      else if(d>28||(quick&&d>20)){ cur=(cur-1+n)%n; }
       el.style.transform='';
     }
     front=null;moved=false;dx=0;lockDir=null; deal();
   }
   /* —— 鼠标 / 触控笔（电脑端）—— */
   stack.addEventListener('pointerdown',function(e){ if(e.pointerType==='touch')return; gStart(e.clientX,e.clientY); });
-  window.addEventListener('pointermove',function(e){ if(e.pointerType==='touch'||!down)return; gMove(e.clientX,e.clientY); });
+  window.addEventListener('pointermove',function(e){ if(e.pointerType==='touch'||!down)return; gMove(e.clientX,e.clientY,true); });
   window.addEventListener('pointerup',function(e){ if(e.pointerType==='touch'||!down)return; gEnd(); });
   window.addEventListener('pointercancel',function(e){ if(e.pointerType==='touch'||!down)return; gCancel(); });
   /* —— 触摸（手机端）：方向锁 + 横向接管，纵向放行页面滚动 —— */
   stack.addEventListener('touchstart',function(e){ if(e.touches.length!==1)return; gStart(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
   stack.addEventListener('touchmove',function(e){
-    if(!down||e.touches.length!==1)return;
-    var t=e.touches[0], ddx=t.clientX-sx, ddy=t.clientY-sy;
-    if(lockDir===null&&(Math.abs(ddx)>6||Math.abs(ddy)>6)) lockDir=Math.abs(ddx)>Math.abs(ddy)?'h':'v';
-    if(lockDir==='h'){ if(e.cancelable)e.preventDefault(); gMove(t.clientX,t.clientY); }
-    else { gRelease(); }
+    if(e.touches.length!==1)return;
+    if(!down&&lockDir!=='v')return;
+    var t=e.touches[0];
+    gMove(t.clientX,t.clientY,e.cancelable);
+    if(lockDir==='h'&&e.cancelable)e.preventDefault();   /* 横向接管：页面不再上下位移 */
   },{passive:false});
   stack.addEventListener('touchend',function(){ if(!down)return; gEnd(); },{passive:true});
   stack.addEventListener('touchcancel',function(){ if(!down)return; gCancel(); },{passive:true});
