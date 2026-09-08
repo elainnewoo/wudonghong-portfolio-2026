@@ -1383,28 +1383,59 @@ const BADGE_SVG = {"01-tme-kugou.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\
   // 暴露给导航：点击名字返回 About 初始态（画廊回到封面 IMG_5441）
   window.__resetGallery=function(){cur=0;deal();};
 
-  /* 手势：拖动最前一张，松手超阈值则翻到下一张，堆叠跟着重排 */
-  var down=false,sx=0,dx=0,moved=false,front=null;
-  stack.addEventListener('pointerdown',function(e){
-    down=true;moved=false;dx=0;sx=e.clientX;front=layers[cur];
-    front.style.transition='none';
-  });
-  window.addEventListener('pointermove',function(e){
+  /* 手势：拖动最前一张翻页
+     手机端：先判方向锁（位移 6px 定性；横向占优才接管并 preventDefault，纵向占优立刻放手交还页面滚动），
+             解决「斜划不翻页 + 页面跟着上下位移」；翻页阈值 36px，快速轻扫 18px/260ms 即可翻页（更灵敏）。
+     电脑端：沿用鼠标拖拽，阈值一致；另保留触控板横向滚动（见下方 wheel）。 */
+  var down=false,sx=0,sy=0,dx=0,moved=false,front=null,lockDir=null,tStart=0;
+  function gStart(x,y){
+    down=true;moved=false;dx=0;lockDir=null;sx=x;sy=y;tStart=Date.now();
+    front=layers[cur]; if(front)front.style.transition='none';
+  }
+  function gRelease(){                       /* 纵向为主：放弃拖拽，把滚动交还页面 */
+    if(front){front.style.transition='';front.style.transform='';front=null;}
+    down=false;moved=false;dx=0;lockDir='v';
+  }
+  function gCancel(){
+    if(front){front.style.transition='';front.style.transform='';front=null;}
+    down=false;moved=false;dx=0;lockDir=null;deal();
+  }
+  function gMove(x,y){
     if(!down||!front)return;
-    dx=e.clientX-sx; if(Math.abs(dx)>4)moved=true;
+    var ddx=x-sx, ddy=y-sy;
+    if(lockDir===null&&(Math.abs(ddx)>6||Math.abs(ddy)>6)) lockDir=Math.abs(ddx)>Math.abs(ddy)?'h':'v';
+    if(lockDir!=='h'){ gRelease(); return; }
+    dx=ddx; if(Math.abs(dx)>4)moved=true;
     front.style.transform='translateX('+dx+'px) rotate('+(dx*0.03)+'deg)';
-  });
-  window.addEventListener('pointerup',function(){
+  }
+  function gEnd(){
     if(!down)return; down=false;
-    if(front){
-      front.style.transition='';                 /* 恢复过渡 */
-      if(!moved){ openViewer(cur); }
-      else if(dx<-50){ cur=(cur+1)%n; }
-      else if(dx>50){ cur=(cur-1+n)%n; }
-      front.style.transform='';
+    var d=dx, el=front, quick=(Date.now()-tStart)<260;
+    if(el){
+      el.style.transition='';                 /* 恢复过渡 */
+      if(!moved){ openViewer(cur); }          /* 未移动 = 轻点 → 全屏查看 */
+      else if(d<-36||(quick&&d<-18)){ cur=(cur+1)%n; }
+      else if(d>36||(quick&&d>18)){ cur=(cur-1+n)%n; }
+      el.style.transform='';
     }
-    front=null; deal();
-  });
+    front=null;moved=false;dx=0;lockDir=null; deal();
+  }
+  /* —— 鼠标 / 触控笔（电脑端）—— */
+  stack.addEventListener('pointerdown',function(e){ if(e.pointerType==='touch')return; gStart(e.clientX,e.clientY); });
+  window.addEventListener('pointermove',function(e){ if(e.pointerType==='touch'||!down)return; gMove(e.clientX,e.clientY); });
+  window.addEventListener('pointerup',function(e){ if(e.pointerType==='touch'||!down)return; gEnd(); });
+  window.addEventListener('pointercancel',function(e){ if(e.pointerType==='touch'||!down)return; gCancel(); });
+  /* —— 触摸（手机端）：方向锁 + 横向接管，纵向放行页面滚动 —— */
+  stack.addEventListener('touchstart',function(e){ if(e.touches.length!==1)return; gStart(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
+  stack.addEventListener('touchmove',function(e){
+    if(!down||e.touches.length!==1)return;
+    var t=e.touches[0], ddx=t.clientX-sx, ddy=t.clientY-sy;
+    if(lockDir===null&&(Math.abs(ddx)>6||Math.abs(ddy)>6)) lockDir=Math.abs(ddx)>Math.abs(ddy)?'h':'v';
+    if(lockDir==='h'){ if(e.cancelable)e.preventDefault(); gMove(t.clientX,t.clientY); }
+    else { gRelease(); }
+  },{passive:false});
+  stack.addEventListener('touchend',function(){ if(!down)return; gEnd(); },{passive:true});
+  stack.addEventListener('touchcancel',function(){ if(!down)return; gCancel(); },{passive:true});
 
   /* 触控板 / 电脑触屏横向滚动切换（仅横向主导时接管，纵向仍交还页面滚动）
      防误触：累计横向位移达 70 才翻一张；翻页后 800ms 内丢弃惯性余波 */
