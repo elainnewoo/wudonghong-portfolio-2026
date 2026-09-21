@@ -197,6 +197,7 @@ h2.sec{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:1px;margin:
 /* ---- Careers · 屏风折手风琴 ---- */
 .career-header{position:absolute;left:36px;top:50%;transform:translateY(-50%);z-index:6;padding:0;pointer-events:none}
 .career-header h1{writing-mode:vertical-rl;text-orientation:upright;font-size:calc(var(--fold-h,360px) * 0.072);font-weight:700;line-height:1.1;letter-spacing:0.34em;color:var(--ink);margin:0}
+[lang="en"] .career-header h1{font-size:calc(var(--fold-h,360px) * 0.05);letter-spacing:0.1em;line-height:1.18} /* 英文竖排标题：缩小字号+收紧字距，避免 "Career Journey" 超出折页高度被裁切 */
 .stage{
   position:relative;z-index:5;width:calc(100% - 58px);margin-left:58px;height:calc(var(--stage-h,420px) - 8vh);
   overflow:hidden;cursor:grab;user-select:none;-webkit-user-select:none;
